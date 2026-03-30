@@ -1,0 +1,9 @@
+{
+  "name": "family-forecast-functions",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^4.9.0"
+  }
+}

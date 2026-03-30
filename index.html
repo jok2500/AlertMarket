@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Family Forecast Market</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07111f;
+      --surface: rgba(15, 23, 42, 0.84);
+      --surface-2: rgba(30, 41, 59, 0.88);
+      --border: rgba(148, 163, 184, 0.18);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --brand: #7c3aed;
+      --brand-2: #22c55e;
+      --brand-3: #ef4444;
+      --shadow: 0 24px 50px rgba(0, 0, 0, 0.42);
+      --radius: 24px;
+      --radius-sm: 16px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(124, 58, 237, 0.24), transparent 32%),
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.16), transparent 28%),
+        linear-gradient(180deg, #020617 0%, #07111f 34%, #0b1220 100%);
+      color: var(--text);
+      min-height: 100vh;
+      direction: rtl;
+    }
+    body[data-theme="light"] {
+      --surface: rgba(255, 255, 255, 0.92);
+      --surface-2: rgba(241, 245, 249, 0.95);
+      --border: rgba(15, 23, 42, 0.1);
+      --text: #0f172a;
+      --muted: #475569;
+      --shadow: 0 24px 50px rgba(15, 23, 42, 0.12);
+    }
+    button, input, select, textarea { font: inherit; }
+    button { border: 0; cursor: pointer; transition: transform 180ms ease, opacity 180ms ease; }
+    button:hover { transform: translateY(-1px); }
+    input, select, textarea {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.32);
+      color: var(--text);
+      padding: 14px 16px;
+      outline: none;
+    }
+    body[data-theme="light"] input,
+    body[data-theme="light"] select,
+    body[data-theme="light"] textarea {
+      background: rgba(255,255,255,0.78);
+    }
+    .glass {
+      background: var(--surface);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+    }
+    .soft {
+      background: rgba(148, 163, 184, 0.08);
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+      border-radius: var(--radius-sm);
+    }
+    .hidden { display: none !important; }
+    .container { width: min(1400px, 100%); margin: 0 auto; }
+    .app-shell { min-height: 100vh; padding: 24px; }
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center; gap: 16px;
+      padding: 18px 22px; position: sticky; top: 18px; z-index: 30; margin-bottom: 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-mark {
+      width: 48px; height: 48px; border-radius: 16px;
+      background: linear-gradient(135deg, #7c3aed 0%, #22c55e 100%);
+      display: grid; place-items: center; color: white; font-weight: 900;
+    }
+    .brand-copy h1, .auth-hero h2, .hero-title { margin: 0; letter-spacing: -0.04em; }
+    .brand-copy p { margin: 5px 0 0; color: var(--muted); font-size: 0.9rem; }
+    .top-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .chip, .pill, .badge {
+      display: inline-flex; align-items: center; gap: 8px; border-radius: 999px;
+      padding: 10px 14px; font-size: 0.88rem; font-weight: 700;
+      border: 1px solid var(--border); background: rgba(148, 163, 184, 0.08);
+    }
+    .icon-btn {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: rgba(148,163,184,0.1); border: 1px solid var(--border); color: var(--text);
+      display: grid; place-items: center;
+    }
+    .hero, .layout, .auth-shell, .admin-grid { display: grid; gap: 22px; }
+    .hero { grid-template-columns: 1.5fr 0.9fr; margin-bottom: 22px; }
+    .layout { grid-template-columns: 0.92fr 1.08fr 1fr; align-items: start; }
+    .hero-card, .side-card, .panel, .auth-card, .auth-hero, .admin-panel { padding: 22px; }
+    .hero-card { position: relative; overflow: hidden; }
+    .hero-card::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(circle at 15% 25%, rgba(124, 58, 237, 0.16), transparent 26%),
+        radial-gradient(circle at 85% 10%, rgba(34, 197, 94, 0.16), transparent 24%);
+    }
+    .hero-card > * { position: relative; z-index: 1; }
+    .hero-title { font-size: clamp(2rem, 4vw, 3.4rem); line-height: 1.02; font-weight: 900; }
+    .hero-subtitle, .market-description, .helper, .panel-head .meta, .side-card p, .auth-card p { color: var(--muted); line-height: 1.8; }
+    .hero-grid, .grid-2, .info-row, .odds-grid, .bet-split, .mini-kpis, .grid-3, .grid-4 { display: grid; gap: 14px; }
+    .hero-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 22px; }
+    .stat, .info-box, .odds-card, .mini-card, .list-item, .auth-bullet {
+      padding: 16px; border-radius: 18px; background: rgba(148, 163, 184, 0.08); border: 1px solid var(--border);
+    }
+    .label, .field-label, .info-box span, .mini-card span { display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 8px; }
+    .value, .mini-card strong, .info-box strong { font-size: 1.3rem; font-weight: 900; letter-spacing: -0.03em; }
+    .actions, .tabs, .admin-toolbar, .market-badges, .legend { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      padding: 13px 18px; border-radius: 16px; border: 1px solid transparent;
+      font-weight: 800; color: white; background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    }
+    .btn.secondary { background: rgba(148,163,184,0.12); color: var(--text); border-color: var(--border); }
+    .btn.success { background: linear-gradient(135deg, #16a34a, #22c55e); }
+    .btn.danger { background: linear-gradient(135deg, #dc2626, #ef4444); }
+    .btn.warning { background: linear-gradient(135deg, #d97706, #f59e0b); color: #111827; }
+    .tab-btn {
+      padding: 11px 14px; border-radius: 14px; border: 1px solid var(--border);
+      background: rgba(148,163,184,0.08); color: var(--text); font-weight: 700;
+    }
+    .tab-btn.active { background: linear-gradient(135deg, rgba(124,58,237,0.24), rgba(34,197,94,0.18)); border-color: rgba(124,58,237,0.42); }
+    .panel h3, .section-title h4, .admin-card h4 { margin: 0 0 14px; font-weight: 900; letter-spacing: -0.03em; }
+    .loading-bar { width: 100%; height: 3px; border-radius: 999px; background: rgba(148,163,184,0.18); overflow: hidden; }
+    .loading-bar > div { width: 35%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, transparent, rgba(124,58,237,0.95), transparent); animation: slide 1.2s linear infinite; }
+    @keyframes slide { 0% { transform: translateX(-120%); } 100% { transform: translateX(380%); } }
+    .toast-wrap { position: fixed; inset-inline: 20px; bottom: 20px; display: grid; gap: 10px; z-index: 60; pointer-events: none; }
+    .toast {
+      pointer-events: auto; max-width: 460px; margin-inline-start: auto; padding: 14px 16px;
+      border-radius: 18px; background: rgba(2,6,23,0.94); color: white; border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow); display: grid; gap: 4px;
+    }
+    .table-wrap { overflow: auto; border-radius: 18px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; min-width: 780px; background: rgba(148,163,184,0.04); }
+    th, td { text-align: right; padding: 14px 12px; border-bottom: 1px solid var(--border); font-size: 0.88rem; vertical-align: top; }
+    th { position: sticky; top: 0; background: rgba(15,23,42,0.96); color: var(--muted); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em; z-index: 1; }
+    .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 999px; margin-inline-start: 8px; background: #94a3b8; }
+    .status-dot.open { background: #22c55e; }
+    .status-dot.closed { background: #f59e0b; }
+    .status-dot.resolved { background: #7c3aed; }
+    .status-dot.draft { background: #94a3b8; }
+    @media (max-width: 1280px) { .hero, .layout, .auth-shell, .admin-grid { grid-template-columns: 1fr; } .mini-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 860px) {
+      .app-shell { padding: 14px; }
+      .topbar { top: 12px; padding: 16px; }
+      .hero-grid, .grid-2, .grid-3, .grid-4, .odds-grid, .bet-split, .mini-kpis, .info-row { grid-template-columns: 1fr; }
+      .hero-card, .panel, .side-card, .admin-panel, .auth-card, .auth-hero { padding: 18px; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <div id="authView" class="auth-wrap">
+    <div class="auth-shell">
+      <section class="auth-hero glass">
+        <div class="brand">
+          <div class="brand-mark">F</div>
+          <div class="brand-copy">
+            <h1>Family Forecast Market</h1>
+            <p>שוק תחזית משפחתי, חי, ומאובטח</p>
+          </div>
+        </div>
+        <h2>מערכת הימורי תחזית מקצועית עם ניהול שוק בזמן אמת</h2>
+        <p>לכל טריגר כל משתמש מקבל 10 מטבעות זמניים ומחלק אותם בין כן / לא. החישוב הוא ברמת pool-share, והארנק הווירטואלי מתעדכן רק לאחר הכרעה.</p>
+        <div class="auth-bullets">
+          <div class="auth-bullet"><strong>כניסה והרשמה</strong><span>אימות משתמשים, שחזור סיסמה, ויצירת פרופיל אוטומטית.</span></div>
+          <div class="auth-bullet"><strong>שוק חי</strong><span>הסתברויות, בריכות, תצוגה בזמן אמת, והיסטוריה מלאה.</span></div>
+          <div class="auth-bullet"><strong>פאנל מנהל</strong><span>פתיחה, סגירה, הכרעה, התראות, חוקים, ומשתמשים.</span></div>
+        </div>
+      </section>
+      <section class="auth-card glass">
+        <h3>התחברות</h3>
+        <p>התחבר עם אימייל וסיסמה. משתמש לא רשום עובר למסלול הרשמה מקצועי.</p>
+        <div class="tabs">
+          <button class="tab-btn active" data-auth-tab="login">כניסה</button>
+          <button class="tab-btn" data-auth-tab="register">הרשמה</button>
+          <button class="tab-btn" data-auth-tab="reset">איפוס</button>
+        </div>
+        <form id="loginForm" class="auth-form">
+          <label class="field-label">אימייל</label>
+          <input id="loginEmail" type="email" placeholder="name@example.com">
+          <label class="field-label">סיסמה</label>
+          <input id="loginPassword" type="password" placeholder="••••••••">
+          <div class="actions"><button type="submit" class="btn">כניסה</button><button type="button" class="btn secondary" id="guestPreviewBtn">מצב צפייה</button></div>
+          <div class="switch-row"><a href="#" id="showRegisterLink">אין חשבון? הרשמה</a></div>
+        </form>
+        <form id="registerForm" class="auth-form hidden">
+          <label class="field-label">שם תצוגה</label>
+          <input id="registerName" type="text" placeholder="לדוגמה: דן כהן">
+          <label class="field-label">אימייל</label>
+          <input id="registerEmail" type="email" placeholder="name@example.com">
+          <label class="field-label">סיסמה</label>
+          <input id="registerPassword" type="password" placeholder="לפחות 8 תווים">
+          <label class="field-label">אימות סיסמה</label>
+          <input id="registerPassword2" type="password" placeholder="חוזר על הסיסמה">
+          <div class="actions"><button type="submit" class="btn success">יצירת חשבון</button><button type="button" class="btn secondary" id="showLoginLink">כבר יש לי חשבון</button></div>
+        </form>
+        <form id="resetForm" class="auth-form hidden">
+          <label class="field-label">אימייל</label>
+          <input id="resetEmail" type="email" placeholder="name@example.com">
+          <div class="actions"><button type="submit" class="btn warning">שליחת מייל איפוס</button><button type="button" class="btn secondary" id="cancelResetBtn">חזרה</button></div>
+        </form>
+        <div class="loading-bar" style="margin-top:18px"><div></div></div>
+      </section>
+    </div>
+  </div>
+<div id="appView" class="app-shell hidden">
+  <div class="container">
+    <header class="topbar glass">
+      <div class="brand">
+        <div class="brand-mark">F</div>
+        <div class="brand-copy">
+          <h1 id="siteName">Family Forecast Market</h1>
+          <p id="siteTagline">שוק תחזית משפחתי בזמן אמת</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="chip" id="connectionChip"><span class="dot"></span><span>מחובר</span></div>
+        <div class="chip" id="roleChip">משתמש</div>
+        <button class="icon-btn" id="themeBtn">☾</button>
+        <button class="icon-btn" id="notifyBtn">🔔</button>
+        <button class="icon-btn" id="logoutBtn">⇦</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <article class="hero-card glass">
+        <h2 class="hero-title">שוק תחזית חי להימור כן / לא</h2>
+        <p class="hero-subtitle">השוק נפתח ומקבל הימורים עד סגירת הטריגר. לאחר מכן, צד הזוכה מקבל את הבריכה לפי חלוקה פרופורציונלית. המטבעות הם וירטואליים בלבד.</p>
+        <div class="hero-grid">
+          <div class="stat"><span class="label">הארנק שלך</span><div class="value" id="walletValue">0</div></div>
+          <div class="stat"><span class="label">מטבעות זמניים</span><div class="value" id="availableCoinsValue">10</div></div>
+          <div class="stat"><span class="label">דירוג</span><div class="value" id="rankValue">—</div></div>
+        </div>
+      </article>
+
+      <aside class="side-card glass">
+        <h3>מצב המערכת</h3>
+        <p>כל הנתונים מוזרמים בזמן אמת מה־Realtime Database. מנהל יכול לפתוח, לסגור ולהכריע שווקים, וההתראות נשלחות דרך FCM Queue.</p>
+        <div class="info-row">
+          <div class="info-box"><span>שוק פעיל</span><strong id="activeMarketState">אין שוק פעיל</strong></div>
+          <div class="info-box"><span>מצב שידור</span><strong id="broadcastState">ממתין</strong></div>
+          <div class="info-box"><span>זמן לסגירה</span><strong id="countdownValue">—</strong></div>
+          <div class="info-box"><span>התראות</span><strong id="notificationState">כבוי</strong></div>
+        </div>
+        <div class="actions">
+          <button class="btn secondary" id="refreshBtn">רענון</button>
+          <button class="btn success" id="enableNotificationsBtn">הפעל FCM</button>
+        </div>
+      </aside>
+    </section>
+
+    <section class="layout">
+      <div class="stack">
+        <article class="panel glass">
+          <h3>השוק הפעיל</h3>
+          <div id="marketEmpty" class="soft" style="padding:24px;text-align:center;">לא הוגדר שוק פעיל.</div>
+          <div id="marketCard" class="hidden">
+            <div class="market-badges">
+              <span class="badge" id="marketStatusBadge"><span class="status-dot open"></span><span>open</span></span>
+              <span class="badge" id="marketCategoryBadge">קטגוריה</span>
+              <span class="badge" id="marketIdBadge">market-id</span>
+            </div>
+            <h4 class="market-title" id="marketQuestion">—</h4>
+            <p class="market-description" id="marketDescription">—</p>
+            <div class="mini-kpis">
+              <div class="mini-card"><span>סה״כ כן</span><strong id="yesTotalValue">0</strong></div>
+              <div class="mini-card"><span>סה״כ לא</span><strong id="noTotalValue">0</strong></div>
+              <div class="mini-card"><span>בריכה כוללת</span><strong id="totalPoolValue">0</strong></div>
+              <div class="mini-card"><span>הסתברות כן</span><strong id="yesOddsValue">50%</strong></div>
+            </div>
+            <div class="odds-grid">
+              <div class="odds-card"><div class="side" style="display:flex;justify-content:space-between;"><span>כן</span><span id="yesOddsLabel">50%</span></div><div class="loading-bar"><div id="yesProgress"></div></div></div>
+              <div class="odds-card"><div class="side" style="display:flex;justify-content:space-between;"><span>לא</span><span id="noOddsLabel">50%</span></div><div class="loading-bar"><div id="noProgress"></div></div></div>
+            </div>
+            <div style="height:1px;background:var(--border);margin:18px 0;"></div>
+            <div class="bet-grid">
+              <div class="grid-2">
+                <div><label class="field-label">כמה להמר על כן</label><input id="yesAmount" type="number" min="0" max="10" step="1" placeholder="0"></div>
+                <div><label class="field-label">כמה להמר על לא</label><input id="noAmount" type="number" min="0" max="10" step="1" placeholder="0"></div>
+              </div>
+              <div class="helper" id="betHelper">ניתן לפזר עד 10 מטבעות זמניים בסבב.</div>
+              <div class="actions">
+                <button class="btn success" id="placeBetBtn">שליחת הימור</button>
+                <button class="btn secondary" id="maxYesBtn">10 על כן</button>
+                <button class="btn secondary" id="maxNoBtn">10 על לא</button>
+                <button class="btn secondary" id="clearBetBtn">איפוס</button>
+              </div>
+              <div class="info-row">
+                <div class="info-box"><span>הימור אישי</span><strong id="myBetSummary">טרם הימרת</strong></div>
+                <div class="info-box"><span>יתרה זמנית</span><strong id="myRemainingCoins">10</strong></div>
+                <div class="info-box"><span>שעת פתיחה</span><strong id="marketOpenedAt">—</strong></div>
+                <div class="info-box"><span>שעת סגירה</span><strong id="marketClosesAt">—</strong></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel glass">
+          <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+            <div><h4>היסטוריית טריגרים</h4><p>אירועים סגורים, תוצאות, וניקוד מצטבר</p></div>
+            <span class="pill" id="historyCount">0</span>
+          </div>
+          <div class="list" id="historyList"><div class="soft" style="padding:24px;text-align:center;">אין עדיין היסטוריה.</div></div>
+        </article>
+      </div>
+
+      <div class="stack">
+        <article class="panel glass">
+          <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+            <div><h4>הארנק והדירוג</h4><p>שווי, הישגים, סטטיסטיקות, והתקדמות</p></div>
+            <span class="pill" id="walletSyncState">Live</span>
+          </div>
+          <div class="grid-2">
+            <div class="mini-card"><span>יתרה וירטואלית</span><strong id="walletBalance">0</strong></div>
+            <div class="mini-card"><span>רווח מצטבר</span><strong id="profitTotal">0</strong></div>
+            <div class="mini-card"><span>הימורים שביצעת</span><strong id="betsPlacedCount">0</strong></div>
+            <div class="mini-card"><span>ניצחונות</span><strong id="winsCount">0</strong></div>
+          </div>
+        </article>
+
+        <article class="panel glass">
+          <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+            <div><h4>לידרבורד</h4><p>המשתמשים המובילים</p></div>
+            <span class="pill" id="leaderboardCount">0</span>
+          </div>
+          <div class="list" id="leaderboardList"><div class="soft" style="padding:24px;text-align:center;">אין נתונים להצגה.</div></div>
+        </article>
+
+        <article class="panel glass admin-panel hidden" id="adminPanel">
+          <div class="admin-header" style="display:flex;justify-content:space-between;gap:12px;align-items:start;">
+            <div><h3>פאנל מנהל</h3><p>ניהול טריגרים, סגירה, הכרעה, שידור פוש, מעקב אחר משתמשים, וקובצי אבטחה.</p></div>
+            <div class="admin-toolbar">
+              <button class="btn secondary" id="copyRulesBtn">העתק חוקים</button>
+              <button class="btn secondary" id="copySwBtn">העתק SW</button>
+              <button class="btn secondary" id="copyFunctionsBtn">העתק Functions</button>
+            </div>
+          </div>
+
+          <div class="tabs">
+            <button class="tab-btn active" data-admin-tab="market">שוק</button>
+            <button class="tab-btn" data-admin-tab="broadcast">התראות</button>
+            <button class="tab-btn" data-admin-tab="users">משתמשים</button>
+            <button class="tab-btn" data-admin-tab="settings">הגדרות</button>
+            <button class="tab-btn" data-admin-tab="security">אבטחה</button>
+          </div>
+
+          <div id="adminTabMarket" class="admin-grid">
+            <div class="admin-card">
+              <h4>יצירת שוק חדש</h4>
+              <form id="createMarketForm" class="admin-form">
+                <label class="field-label">שאלה</label>
+                <input id="marketQuestionInput" type="text" placeholder="תהיה אזעקה עד סגירת הטריגר?">
+                <label class="field-label">תיאור</label>
+                <textarea id="marketDescriptionInput" placeholder="הסבר קצר על הטריגר"></textarea>
+                <div class="grid-2">
+                  <div><label class="field-label">קטגוריה</label><select id="marketCategoryInput"><option value="alerts">אזעקות</option><option value="family">משפחתי</option><option value="custom">אחר</option></select></div>
+                  <div><label class="field-label">משך פתוח בדקות</label><input id="marketMinutesInput" type="number" min="1" max="10080" value="30"></div>
+                </div>
+                <div class="grid-2">
+                  <div><label class="field-label">התראה אוטומטית</label><select id="marketAutoNotifyInput"><option value="yes">כן</option><option value="no">לא</option></select></div>
+                  <div><label class="field-label">מצב התחלתי</label><select id="marketInitialStatusInput"><option value="open">פתוח</option><option value="draft">טיוטה</option></select></div>
+                </div>
+                <div class="actions"><button type="submit" class="btn success">יצירת שוק</button><button type="button" class="btn secondary" id="seedDemoBtn">הוספת דמו</button></div>
+              </form>
+              <div style="height:1px;background:var(--border);margin:18px 0;"></div>
+              <div class="actions"><button class="btn warning" id="openMarketBtn">פתח / הפעל</button><button class="btn secondary" id="closeMarketBtn">סגור</button><button class="btn danger" id="requestResolveBtn">הכרע תוצאה</button></div>
+            </div>
+
+            <div class="admin-card">
+              <h4>שווקים</h4>
+              <div class="list" id="adminMarketList"><div class="soft" style="padding:24px;text-align:center;">אין שווקים להצגה.</div></div>
+            </div>
+          </div>
+
+          <div id="adminTabBroadcast" class="admin-grid hidden">
+            <div class="admin-card">
+              <h4>שליחת הודעת פוש</h4>
+              <form id="broadcastForm" class="admin-form">
+                <label class="field-label">כותרת</label>
+                <input id="broadcastTitleInput" type="text" placeholder="שוק חדש נפתח!">
+                <label class="field-label">תוכן</label>
+                <textarea id="broadcastBodyInput" placeholder="מוזמנים להיכנס ולהמר."></textarea>
+                <div class="grid-2">
+                  <div><label class="field-label">קהל</label><select id="broadcastTargetInput"><option value="all">כולם</option><option value="active">רק פעילים</option><option value="recent">פעילים אחרונים</option></select></div>
+                  <div><label class="field-label">סוג</label><select id="broadcastTypeInput"><option value="market_open">פתיחת שוק</option><option value="market_close">סגירת שוק</option><option value="market_resolve">הכרעת שוק</option><option value="custom">מותאם</option></select></div>
+                </div>
+                <div class="actions"><button type="submit" class="btn success">תזמון שידור</button><button type="button" class="btn secondary" id="testBroadcastBtn">בדיקת פוש</button></div>
+              </form>
+            </div>
+            <div class="admin-card">
+              <h4>תורים ממתינים</h4>
+              <div class="list" id="broadcastQueueList"><div class="soft" style="padding:24px;text-align:center;">אין הודעות בתור.</div></div>
+            </div>
+          </div>
+
+          <div id="adminTabUsers" class="admin-grid hidden">
+            <div class="admin-card">
+              <h4>משתמשים</h4>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>שם</th><th>אימייל</th><th>תפקיד</th><th>יתרה</th><th>ביצועים</th><th>פעולות</th></tr></thead>
+                  <tbody id="usersTableBody"><tr><td colspan="6">טוען...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="admin-card">
+              <h4>ממשל מערכת</h4>
+              <div class="grid-2">
+                <div class="mini-card"><span>משתמשים</span><strong id="usersCountValue">0</strong></div>
+                <div class="mini-card"><span>אדמינים</span><strong id="adminsCountValue">0</strong></div>
+                <div class="mini-card"><span>שווקים פעילים</span><strong id="openMarketsCountValue">0</strong></div>
+                <div class="mini-card"><span>הודעות בתור</span><strong id="broadcastCountValue">0</strong></div>
+              </div>
+              <div style="height:1px;background:var(--border);margin:18px 0;"></div>
+              <input id="adminUserSearch" type="text" placeholder="חיפוש משתמש">
+            </div>
+          </div>
+
+          <div id="adminTabSettings" class="admin-grid hidden">
+            <div class="admin-card">
+              <h4>הגדרות אתר</h4>
+              <form id="siteSettingsForm" class="admin-form">
+                <div class="grid-2">
+                  <div><label class="field-label">שם האתר</label><input id="siteNameInput" type="text" placeholder="Family Forecast Market"></div>
+                  <div><label class="field-label">סלוגן</label><input id="siteTaglineInput" type="text" placeholder="שוק תחזית משפחתי בזמן אמת"></div>
+                </div>
+                <div class="grid-2">
+                  <div><label class="field-label">תחזוקה</label><select id="maintenanceModeInput"><option value="off">כבוי</option><option value="on">פעיל</option></select></div>
+                  <div><label class="field-label">מטבעות לסבב</label><input id="defaultCoinsInput" type="number" min="1" max="100" value="10"></div>
+                </div>
+                <div class="actions"><button type="submit" class="btn success">שמירת הגדרות</button><button type="button" class="btn secondary" id="reloadSettingsBtn">טעינה מחדש</button></div>
+              </form>
+            </div>
+            <div class="admin-card">
+              <h4>הגדרות נתונים</h4>
+              <div class="list">
+                <div class="list-item"><strong>מטבעות</strong><small>הגבלת הבסיס של הימור זמני לכל שוק.</small></div>
+                <div class="list-item"><strong>לוג רווחים</strong><small>כל הכרעה נשמרת ב-RTDB ובשירות ה-Cloud Function.</small></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="adminTabSecurity" class="admin-grid hidden">
+            <div class="admin-card">
+              <h4>חוקי Firebase Realtime Database</h4>
+              <textarea id="rulesPreview" class="codebox" readonly></textarea>
+            </div>
+            <div class="admin-card">
+              <h4>firebase-messaging-sw.js</h4>
+              <textarea id="swPreview" class="codebox" readonly></textarea>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="stack">
+        <article class="panel glass">
+          <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+            <div><h4>פעילות אחרונה</h4><p>הודעות, הימורים, הכרעות ושינויים</p></div>
+            <span class="pill" id="activityCount">0</span>
+          </div>
+          <div class="list" id="activityList"><div class="soft" style="padding:24px;text-align:center;">אין פעילות להצגה.</div></div>
+        </article>
+
+        <article class="panel glass">
+          <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+            <div><h4>הימורים אחרונים שלך</h4><p>פירוט ההימורים והמטבעות שלך לפי שוק</p></div>
+            <span class="pill" id="myBetsCount">0</span>
+          </div>
+          <div class="list" id="myBetsList"><div class="soft" style="padding:24px;text-align:center;">טרם ביצעת הימורים.</div></div>
+        </article>
+
+        <article class="panel glass">
+          <div class="section-title"><div><h4>טוב לדעת</h4><p>לוגיקה, זמני תגובה, ואבטחה</p></div></div>
+          <div class="list">
+            <div class="list-item"><strong>הימור לא מצטבר בין שווקים</strong><small>כל שוק מקבל 10 מטבעות זמניים חדשים.</small></div>
+            <div class="list-item"><strong>הארנק הווירטואלי נשמר</strong><small>ניצחונות מצטברים לארנק הקבוע.</small></div>
+            <div class="list-item"><strong>חישוב פרופורציונלי</strong><small>החלוקה נעשית לפי חלקו של המשתמש בבריכה של הצד המנצח.</small></div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <p style="margin-top:22px;color:var(--muted);text-align:center;font-size:0.82rem;line-height:1.7;">מופעל על Firebase Authentication, Realtime Database, FCM, ו-Cloud Functions עבור שליחה בטוחה וחלוקת רווחים.</p>
+  </div>
+</div>
+<div class="toast-wrap" id="toastWrap"></div>
+<template id="listItemTemplate">
+  <div class="list-item"><div class="list-item-head"><strong></strong><span class="badge"></span></div><small></small></div>
+</template>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      sendPasswordResetEmail,
+      signOut,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      onValue,
+      get,
+      set,
+      update,
+      push,
+      runTransaction,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import {
+      getMessaging,
+      getToken,
+      onMessage
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
+
+    const firebaseConfig = {
+      apiKey: "__API_KEY__",
+      authDomain: "__AUTH_DOMAIN__",
+      databaseURL: "__DATABASE_URL__",
+      projectId: "__PROJECT_ID__",
+      storageBucket: "__STORAGE_BUCKET__",
+      messagingSenderId: "__MESSAGING_SENDER_ID__",
+      appId: "__APP_ID__"
+    };
+
+    const vapidKey = "__VAPID_KEY__";
+    const defaultSettings = {
+      siteName: "Family Forecast Market",
+      siteTagline: "שוק תחזית משפחתי בזמן אמת",
+      maintenanceMode: false,
+      defaultCoinsPerMarket: 10,
+      activeMarketId: null
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    const messaging = getMessaging(app);
+
+    const el = (id) => document.getElementById(id);
+    const authView = el("authView");
+    const appView = el("appView");
+    const toastWrap = el("toastWrap");
+    const adminPanel = el("adminPanel");
+
+    const loginForm = el("loginForm");
+    const registerForm = el("registerForm");
+    const resetForm = el("resetForm");
+
+    const loginEmail = el("loginEmail");
+    const loginPassword = el("loginPassword");
+    const registerName = el("registerName");
+    const registerEmail = el("registerEmail");
+    const registerPassword = el("registerPassword");
+    const registerPassword2 = el("registerPassword2");
+    const resetEmail = el("resetEmail");
+
+    const themeBtn = el("themeBtn");
+    const logoutBtn = el("logoutBtn");
+    const notifyBtn = el("notifyBtn");
+    const refreshBtn = el("refreshBtn");
+    const enableNotificationsBtn = el("enableNotificationsBtn");
+    const guestPreviewBtn = el("guestPreviewBtn");
+    const roleChip = el("roleChip");
+    const connectionChip = el("connectionChip");
+
+    const siteNameEl = el("siteName");
+    const siteTaglineEl = el("siteTagline");
+    const walletValue = el("walletValue");
+    const availableCoinsValue = el("availableCoinsValue");
+    const rankValue = el("rankValue");
+    const activeMarketState = el("activeMarketState");
+    const broadcastState = el("broadcastState");
+    const countdownValue = el("countdownValue");
+    const notificationState = el("notificationState");
+
+    const marketEmpty = el("marketEmpty");
+    const marketCard = el("marketCard");
+    const marketStatusBadge = el("marketStatusBadge");
+    const marketCategoryBadge = el("marketCategoryBadge");
+    const marketIdBadge = el("marketIdBadge");
+    const marketQuestion = el("marketQuestion");
+    const marketDescription = el("marketDescription");
+    const yesTotalValue = el("yesTotalValue");
+    const noTotalValue = el("noTotalValue");
+    const totalPoolValue = el("totalPoolValue");
+    const yesOddsValue = el("yesOddsValue");
+    const yesOddsLabel = el("yesOddsLabel");
+    const noOddsLabel = el("noOddsLabel");
+    const yesProgress = el("yesProgress");
+    const noProgress = el("noProgress");
+    const yesAmount = el("yesAmount");
+    const noAmount = el("noAmount");
+    const placeBetBtn = el("placeBetBtn");
+    const maxYesBtn = el("maxYesBtn");
+    const maxNoBtn = el("maxNoBtn");
+    const clearBetBtn = el("clearBetBtn");
+    const myBetSummary = el("myBetSummary");
+    const myRemainingCoins = el("myRemainingCoins");
+    const marketOpenedAt = el("marketOpenedAt");
+    const marketClosesAt = el("marketClosesAt");
+    const betHelper = el("betHelper");
+
+    const historyList = el("historyList");
+    const historyCount = el("historyCount");
+    const walletBalance = el("walletBalance");
+    const profitTotal = el("profitTotal");
+    const betsPlacedCount = el("betsPlacedCount");
+    const winsCount = el("winsCount");
+    const leaderboardList = el("leaderboardList");
+    const leaderboardCount = el("leaderboardCount");
+    const activityList = el("activityList");
+    const activityCount = el("activityCount");
+    const myBetsList = el("myBetsList");
+    const myBetsCount = el("myBetsCount");
+
+    const createMarketForm = el("createMarketForm");
+    const broadcastForm = el("broadcastForm");
+    const siteSettingsForm = el("siteSettingsForm");
+
+    const marketQuestionInput = el("marketQuestionInput");
+    const marketDescriptionInput = el("marketDescriptionInput");
+    const marketCategoryInput = el("marketCategoryInput");
+    const marketMinutesInput = el("marketMinutesInput");
+    const marketAutoNotifyInput = el("marketAutoNotifyInput");
+    const marketInitialStatusInput = el("marketInitialStatusInput");
+    const openMarketBtn = el("openMarketBtn");
+    const closeMarketBtn = el("closeMarketBtn");
+    const requestResolveBtn = el("requestResolveBtn");
+    const seedDemoBtn = el("seedDemoBtn");
+    const adminMarketList = el("adminMarketList");
+
+    const broadcastTitleInput = el("broadcastTitleInput");
+    const broadcastBodyInput = el("broadcastBodyInput");
+    const broadcastTargetInput = el("broadcastTargetInput");
+    const broadcastTypeInput = el("broadcastTypeInput");
+    const testBroadcastBtn = el("testBroadcastBtn");
+    const broadcastQueueList = el("broadcastQueueList");
+
+    const usersTableBody = el("usersTableBody");
+    const adminUserSearch = el("adminUserSearch");
+    const usersCountValue = el("usersCountValue");
+    const adminsCountValue = el("adminsCountValue");
+    const openMarketsCountValue = el("openMarketsCountValue");
+    const broadcastCountValue = el("broadcastCountValue");
+
+    const siteNameInput = el("siteNameInput");
+    const siteTaglineInput = el("siteTaglineInput");
+    const maintenanceModeInput = el("maintenanceModeInput");
+    const defaultCoinsInput = el("defaultCoinsInput");
+    const reloadSettingsBtn = el("reloadSettingsBtn");
+
+    const rulesPreview = el("rulesPreview");
+    const swPreview = el("swPreview");
+    const copyRulesBtn = el("copyRulesBtn");
+    const copySwBtn = el("copySwBtn");
+    const copyFunctionsBtn = el("copyFunctionsBtn");
+
+    const authTabs = Array.from(document.querySelectorAll("[data-auth-tab]"));
+    const adminTabs = Array.from(document.querySelectorAll("[data-admin-tab]"));
+
+    const state = {
+      user: null,
+      profile: null,
+      wallet: null,
+      role: "user",
+      settings: { ...defaultSettings },
+      activeMarket: null,
+      markets: [],
+      users: [],
+      activity: [],
+      broadcasts: [],
+      myBets: [],
+      theme: localStorage.getItem("ffm-theme") || "dark",
+      liveTimer: null,
+      notificationsEnabled: false,
+      subscriptions: []
+    };
+
+    const addSub = (unsub) => typeof unsub === "function" && state.subscriptions.push(unsub);
+    const clearSubs = () => { while (state.subscriptions.length) { try { state.subscriptions.pop()(); } catch {} } };
+    const readNum = (v, fallback = 0) => Number.isFinite(Number(v)) ? Number(v) : fallback;
+    const round2 = (v) => Math.round((readNum(v) + Number.EPSILON) * 100) / 100;
+    const fmt = (v) => new Intl.NumberFormat("he-IL", { maximumFractionDigits: 2 }).format(readNum(v));
+    const ts = (v) => {
+      if (!v) return "—";
+      const d = new Date(Number(v));
+      return Number.isNaN(d.getTime()) ? "—" : new Intl.DateTimeFormat("he-IL", { dateStyle: "medium", timeStyle: "short" }).format(d);
+    };
+    const esc = (s) => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    const toast = (title, body = "", type = "info") => {
+      const node = document.createElement("div");
+      node.className = "toast";
+      node.style.borderColor = type === "success" ? "#22c55e55" : type === "danger" ? "#ef444455" : "#7c3aed55";
+      node.innerHTML = `<strong>${esc(title)}</strong><span>${esc(body)}</span>`;
+      toastWrap.appendChild(node);
+      setTimeout(() => node.remove(), 3800);
+    };
+    const showAuthTab = (name) => {
+      authTabs.forEach((btn) => btn.classList.toggle("active", btn.dataset.authTab === name));
+      loginForm.classList.toggle("hidden", name !== "login");
+      registerForm.classList.toggle("hidden", name !== "register");
+      resetForm.classList.toggle("hidden", name !== "reset");
+    };
+    const showAdminTab = (name) => {
+      adminTabs.forEach((btn) => btn.classList.toggle("active", btn.dataset.adminTab === name));
+      el("adminTabMarket").classList.toggle("hidden", name !== "market");
+      el("adminTabBroadcast").classList.toggle("hidden", name !== "broadcast");
+      el("adminTabUsers").classList.toggle("hidden", name !== "users");
+      el("adminTabSettings").classList.toggle("hidden", name !== "settings");
+      el("adminTabSecurity").classList.toggle("hidden", name !== "security");
+    };
+
+    const setTheme = (theme) => {
+      state.theme = theme;
+      document.body.dataset.theme = theme;
+      localStorage.setItem("ffm-theme", theme);
+      themeBtn.textContent = theme === "dark" ? "☾" : "☀";
+    };
+
+    const roleLabel = () => state.role === "admin" ? "מנהל" : "משתמש";
+    const uidShort = (uid) => uid ? `${uid.slice(0, 5)}…${uid.slice(-4)}` : "—";
+    const marketPath = (id) => `markets/${id}`;
+
+    const isOpen = (market) => market && market.status === "open";
+    const currentCoins = () => clamp(readNum(state.settings.defaultCoinsPerMarket, 10), 1, 100);
+    const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+    const activeMarket = () => state.activeMarket;
+    const myBet = (market) => market?.bets?.[auth.currentUser?.uid] || null;
+
+    const odds = (market) => {
+      const yes = readNum(market?.totalYes, 0);
+      const no = readNum(market?.totalNo, 0);
+      const total = yes + no;
+      const yesOdds = total > 0 ? (yes / total) * 100 : 50;
+      const noOdds = total > 0 ? (no / total) * 100 : 50;
+      return { yes, no, total, yesOdds, noOdds };
+    };
+
+    const setVisible = (node, visible) => node.classList.toggle("hidden", !visible);
+    const resetMarketInputs = () => { yesAmount.value = ""; noAmount.value = ""; };
+
+    const renderSettings = () => {
+      siteNameEl.textContent = state.settings.siteName || defaultSettings.siteName;
+      siteTaglineEl.textContent = state.settings.siteTagline || defaultSettings.siteTagline;
+      siteNameInput.value = state.settings.siteName || defaultSettings.siteName;
+      siteTaglineInput.value = state.settings.siteTagline || defaultSettings.siteTagline;
+      maintenanceModeInput.value = state.settings.maintenanceMode ? "on" : "off";
+      defaultCoinsInput.value = state.settings.defaultCoinsPerMarket || 10;
+    };
+
+    const renderHeader = () => {
+      roleChip.textContent = roleLabel();
+      notificationState.textContent = state.notificationsEnabled ? "פועל" : "כבוי";
+      activeMarketState.textContent = state.activeMarket ? `${state.activeMarket.question} · ${state.activeMarket.status}` : "אין שוק פעיל";
+      broadcastState.textContent = state.settings.maintenanceMode ? "תחזוקה" : "רגיל";
+      walletValue.textContent = fmt(state.wallet?.balance || 0);
+      walletBalance.textContent = fmt(state.wallet?.balance || 0);
+      profitTotal.textContent = fmt(state.wallet?.profit || 0);
+      availableCoinsValue.textContent = String(currentCoins());
+      rankValue.textContent = state.profile?.rank ? `#${state.profile.rank}` : "—";
+    };
+
+    const renderMarket = () => {
+      const m = activeMarket();
+      if (!m) {
+        setVisible(marketEmpty, true);
+        setVisible(marketCard, false);
+        countdownValue.textContent = "—";
+        return;
+      }
+      setVisible(marketEmpty, false);
+      setVisible(marketCard, true);
+      const o = odds(m);
+      marketStatusBadge.innerHTML = `<span class="status-dot ${m.status}"></span><span>${m.status}</span>`;
+      marketCategoryBadge.textContent = m.category || "custom";
+      marketIdBadge.textContent = uidShort(m.id);
+      marketQuestion.textContent = m.question || "—";
+      marketDescription.textContent = m.description || "—";
+      yesTotalValue.textContent = fmt(o.yes);
+      noTotalValue.textContent = fmt(o.no);
+      totalPoolValue.textContent = fmt(o.total);
+      yesOddsValue.textContent = `${o.yesOdds.toFixed(1)}%`;
+      yesOddsLabel.textContent = `${o.yesOdds.toFixed(1)}%`;
+      noOddsLabel.textContent = `${o.noOdds.toFixed(1)}%`;
+      yesProgress.style.width = `${o.yesOdds.toFixed(2)}%`;
+      noProgress.style.width = `${o.noOdds.toFixed(2)}%`;
+      myBetSummary.textContent = myBet(m) ? `כן ${readNum(myBet(m).yes,0)} / לא ${readNum(myBet(m).no,0)}` : "טרם הימרת";
+      myRemainingCoins.textContent = String(readNum(myBet(m)?.remaining, currentCoins()));
+      marketOpenedAt.textContent = ts(m.openedAt || m.createdAt);
+      marketClosesAt.textContent = ts(m.closesAt);
+      const ms = readNum(m.closesAt, 0) - Date.now();
+      countdownValue.textContent = m.status === "open" ? (ms > 0 ? new Date(ms).toISOString().substr(14, 5) : "00:00") : m.status;
+      betHelper.textContent = m.status === "open"
+        ? `ניתן לפזר עד ${currentCoins()} מטבעות זמניים בסבב.`
+        : "השוק סגור כרגע. ניתן לצפות בלבד.";
+      placeBetBtn.disabled = m.status !== "open";
+    };
+
+    const renderHistory = () => {
+      const items = state.markets.filter((m) => ["closed","resolved"].includes(m.status)).slice(0, 18);
+      historyCount.textContent = String(items.length);
+      if (!items.length) {
+        historyList.innerHTML = `<div class="soft" style="padding:24px;text-align:center;">אין עדיין היסטוריה.</div>`;
+        return;
+      }
+      historyList.innerHTML = items.map((m) => {
+        const o = odds(m);
+        return `<div class="list-item"><strong>${esc(m.question)}</strong><small>כן ${fmt(o.yes)} · לא ${fmt(o.no)} · ${esc(m.status)} · ${esc(ts(m.closedAt || m.resolvedAt))}</small></div>`;
+      }).join("");
+    };
+
+    const renderLeaderboard = () => {
+      const items = [...state.users].sort((a,b) => (readNum(b.balance,0)-readNum(a.balance,0))).slice(0, 12);
+      leaderboardCount.textContent = String(items.length);
+      if (!items.length) {
+        leaderboardList.innerHTML = `<div class="soft" style="padding:24px;text-align:center;">אין נתונים להצגה.</div>`;
+        return;
+      }
+      leaderboardList.innerHTML = items.map((u, idx) => `<div class="list-item"><strong>#${idx+1} ${esc(u.displayName)}</strong><small>${esc(u.email || "")} · balance ${fmt(u.balance || 0)} · profit ${fmt(u.profit || 0)}</small></div>`).join("");
+    };
+
+    const renderActivity = () => {
+      const items = state.activity.slice(0, 12);
+      activityCount.textContent = String(items.length);
+      if (!items.length) {
+        activityList.innerHTML = `<div class="soft" style="padding:24px;text-align:center;">אין פעילות להצגה.</div>`;
+        return;
+      }
+      activityList.innerHTML = items.map((a) => `<div class="list-item"><strong>${esc(a.title || a.kind || "log")}</strong><small>${esc(a.detail || "")} · ${esc(ts(a.createdAt))}</small></div>`).join("");
+    };
+
+    const renderMyBets = () => {
+      const items = state.myBets.slice(0, 10);
+      myBetsCount.textContent = String(items.length);
+      if (!items.length) {
+        myBetsList.innerHTML = `<div class="soft" style="padding:24px;text-align:center;">טרם ביצעת הימורים.</div>`;
+        return;
+      }
+      myBetsList.innerHTML = items.map((b) => `<div class="list-item"><strong>${esc(b.question)}</strong><small>כן ${fmt(b.yes)} · לא ${fmt(b.no)} · remaining ${fmt(b.remaining)} · ${esc(b.status || "open")}</small></div>`).join("");
+    };
+
+    const renderAdminMarkets = () => {
+      const items = state.markets.slice(0, 16);
+      if (!items.length) {
+        adminMarketList.innerHTML = `<div class="soft" style="padding:24px;text-align:center;">אין שווקים להצגה.</div>`;
+        return;
+      }
+      adminMarketList.innerHTML = items.map((m) => `<div class="list-item"><strong>${esc(m.question)}</strong><small>${esc(m.description || "")}<br>id ${esc(m.id)} · ${esc(m.status)} · כן ${fmt(odds(m).yes)} · לא ${fmt(odds(m).no)}</small></div>`).join("");
+    };
+
+    const renderBroadcastQueue = () => {
+      const items = state.broadcasts.slice(0, 10);
+      broadcastCountValue.textContent = String(items.length);
+      if (!items.length) {
+        broadcastQueueList.innerHTML = `<div class="soft" style="padding:24px;text-align:center;">אין הודעות בתור.</div>`;
+        return;
+      }
+      broadcastQueueList.innerHTML = items.map((j) => `<div class="list-item"><strong>${esc(j.title || "broadcast")}</strong><small>${esc(j.body || "")} · ${esc(j.type || "custom")} · ${esc(j.status || "queued")}</small></div>`).join("");
+    };
+
+    const renderUsersTable = () => {
+      const q = String(adminUserSearch.value || "").toLowerCase().trim();
+      const items = state.users.filter((u) => !q || [u.uid, u.email, u.displayName, u.role].some((x) => String(x || "").toLowerCase().includes(q)));
+      usersCountValue.textContent = String(state.users.length);
+      adminsCountValue.textContent = String(state.users.filter((u) => u.role === "admin").length);
+      openMarketsCountValue.textContent = String(state.markets.filter((m) => m.status === "open").length);
+      if (!items.length) {
+        usersTableBody.innerHTML = `<tr><td colspan="6">אין תוצאות.</td></tr>`;
+        return;
+      }
+      usersTableBody.innerHTML = items.map((u) => `
+        <tr>
+          <td><strong>${esc(u.displayName || "—")}</strong><br><small>${esc(uidShort(u.uid))}</small></td>
+          <td>${esc(u.email || "—")}</td>
+          <td>${esc(u.role || "user")}</td>
+          <td>${fmt(u.balance || 0)}</td>
+          <td>wins ${u.wins || 0}<br>profit ${fmt(u.profit || 0)}</td>
+          <td><button class="btn secondary" data-role-toggle="${esc(u.uid)}">${u.role === "admin" ? "הסר admin" : "קבע admin"}</button></td>
+        </tr>
+      `).join("");
+    };
+
+    const renderAll = () => {
+      renderSettings();
+      renderHeader();
+      renderMarket();
+      renderHistory();
+      renderLeaderboard();
+      renderActivity();
+      renderMyBets();
+      renderAdminMarkets();
+      renderBroadcastQueue();
+      renderUsersTable();
+    };
+
+    const attachSettingsListener = () => {
+      addSub(onValue(ref(db, "settings/public"), (snap) => {
+        state.settings = { ...defaultSettings, ...(snap.val() || {}), maintenanceMode: !!(snap.val() || {}).maintenanceMode };
+        renderAll();
+      }));
+    };
+
+    const attachMarketsListener = () => {
+      addSub(onValue(ref(db, "markets"), (snap) => {
+        const raw = snap.val() || {};
+        state.markets = Object.entries(raw).map(([id, m]) => ({ id, ...m }));
+        state.activeMarket = state.markets.find((m) => m.status === "open") || state.markets.find((m) => m.id === state.settings.activeMarketId) || state.markets[0] || null;
+        const uid = auth.currentUser?.uid;
+        state.myBets = state.markets.filter((m) => m.bets && m.bets[uid]).map((m) => ({
+          question: m.question,
+          yes: m.bets[uid].yes || 0,
+          no: m.bets[uid].no || 0,
+          remaining: m.bets[uid].remaining ?? currentCoins(),
+          status: m.status
+        })).slice(0, 20);
+        renderAll();
+      }));
+    };
+
+    const attachProfilesListener = () => {
+      addSub(onValue(ref(db, "profiles"), (snap) => {
+        const raw = snap.val() || {};
+        state.users = Object.entries(raw).map(([uid, p]) => ({
+          uid,
+          displayName: p.displayName || "משתמש",
+          email: p.email || "",
+          role: p.role || "user",
+          balance: 0,
+          profit: readNum(p.profit, 0),
+          wins: readNum(p.wins, 0),
+          losses: readNum(p.losses, 0),
+          totalBets: readNum(p.totalBets, 0)
+        }));
+        renderLeaderboard();
+        renderUsersTable();
+      }));
+    };
+
+    const attachWalletsListener = () => {
+      addSub(onValue(ref(db, "wallets"), (snap) => {
+        const raw = snap.val() || {};
+        state.users = state.users.map((u) => ({
+          ...u,
+          balance: readNum(raw[u.uid]?.balance, u.balance || 0),
+          profit: readNum(raw[u.uid]?.profit, u.profit || 0)
+        }));
+        const mine = raw[auth.currentUser?.uid || ""];
+        state.wallet = mine || state.wallet || { balance: 0, profit: 0 };
+        renderAll();
+      }));
+    };
+
+    const attachActivityListener = () => {
+      addSub(onValue(ref(db, "audit/logs"), (snap) => {
+        const raw = snap.val() || {};
+        state.activity = Object.entries(raw).map(([id, a]) => ({ id, ...a })).sort((a,b) => readNum(b.createdAt,0) - readNum(a.createdAt,0));
+        renderActivity();
+      }));
+    };
+
+    const attachQueueListener = () => {
+      addSub(onValue(ref(db, "adminQueue"), (snap) => {
+        const raw = snap.val() || {};
+        state.broadcasts = Object.entries(raw.broadcasts || {}).map(([id, x]) => ({ id, ...x })).sort((a,b) => readNum(b.createdAt,0) - readNum(a.createdAt,0));
+        renderBroadcastQueue();
+      }));
+    };
+
+    const attachRoleListener = () => {
+      const uid = auth.currentUser?.uid;
+      if (!uid) return;
+      addSub(onValue(ref(db, `roles/${uid}`), (snap) => {
+        state.role = snap.val()?.admin ? "admin" : "user";
+        roleChip.textContent = roleLabel();
+        adminPanel.classList.toggle("hidden", state.role !== "admin");
+        renderUsersTable();
+      }));
+    };
+
+    const attachSelfListeners = () => {
+      const uid = auth.currentUser?.uid;
+      if (!uid) return;
+      addSub(onValue(ref(db, `profiles/${uid}`), (snap) => {
+        const p = snap.val() || {};
+        state.profile = { ...p, uid };
+        rankValue.textContent = p.rank ? `#${p.rank}` : "—";
+      }));
+      addSub(onValue(ref(db, `wallets/${uid}`), (snap) => {
+        state.wallet = snap.val() || { balance: 0, profit: 0 };
+        renderHeader();
+      }));
+    };
+
+    const openAuth = () => { authView.classList.remove("hidden"); appView.classList.add("hidden"); };
+    const openApp = () => { authView.classList.add("hidden"); appView.classList.remove("hidden"); };
+
+    const bootstrapProfile = async (user) => {
+      const pRef = ref(db, `profiles/${user.uid}`);
+      const wRef = ref(db, `wallets/${user.uid}`);
+      const pSnap = await get(pRef);
+      if (!pSnap.exists()) {
+        await set(pRef, {
+          displayName: user.displayName || user.email.split("@")[0],
+          email: user.email,
+          role: "user",
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          wins: 0,
+          losses: 0,
+          profit: 0,
+          totalBets: 0
+        });
+      }
+      const wSnap = await get(wRef);
+      if (!wSnap.exists()) {
+        await set(wRef, { balance: 0, lifetimeWinnings: 0, lifetimeStaked: 0, profit: 0, updatedAt: serverTimestamp() });
+      }
+    };
+
+    const loadSession = async (user) => {
+      state.user = user;
+      await bootstrapProfile(user);
+      attachSettingsListener();
+      attachMarketsListener();
+      attachProfilesListener();
+      attachWalletsListener();
+      attachActivityListener();
+      attachQueueListener();
+      attachRoleListener();
+      attachSelfListeners();
+      openApp();
+      renderAll();
+      if (!state.liveTimer) {
+        state.liveTimer = setInterval(renderMarket, 1000);
+      }
+    };
+
+    const signIn = async (email, password) => signInWithEmailAndPassword(auth, email, password);
+    const signUp = async (name, email, password) => {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(cred.user, { displayName: name });
+      return cred.user;
+    };
+
+    const wireAuth = () => {
+      authTabs.forEach((btn) => btn.addEventListener("click", () => showAuthTab(btn.dataset.authTab)));
+      el("showLoginLink").addEventListener("click", () => showAuthTab("login"));
+      el("showRegisterLink")?.addEventListener("click", (e) => { e.preventDefault(); showAuthTab("register"); });
+      el("cancelResetBtn").addEventListener("click", () => showAuthTab("login"));
+
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        try { await signIn(loginEmail.value.trim(), loginPassword.value); toast("ברוך הבא", "התחברת בהצלחה", "success"); }
+        catch (err) { console.error(err); toast("כניסה נכשלה", "בדוק את פרטי ההתחברות", "danger"); }
+      });
+
+      registerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (registerPassword.value !== registerPassword2.value) return toast("אי התאמה", "הסיסמאות לא זהות", "warning");
+        if ((registerPassword.value || "").length < 8) return toast("סיסמה חלשה", "לפחות 8 תווים", "warning");
+        try { await signUp(registerName.value.trim(), registerEmail.value.trim(), registerPassword.value); toast("נוצר חשבון", "התחברת אוטומטית", "success"); }
+        catch (err) { console.error(err); toast("הרשמה נכשלה", "בדוק אם האימייל כבר קיים", "danger"); }
+      });
+
+      resetForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        try { await sendPasswordResetEmail(auth, resetEmail.value.trim()); toast("נשלח", "מייל איפוס נשלח", "success"); }
+        catch (err) { console.error(err); toast("שגיאה", "לא ניתן לשלוח מייל איפוס", "danger"); }
+      });
+    };
+
+    const wireMain = () => {
+      themeBtn.addEventListener("click", () => setTheme(state.theme === "dark" ? "light" : "dark"));
+      logoutBtn.addEventListener("click", async () => signOut(auth));
+      refreshBtn.addEventListener("click", () => renderAll());
+      notifyBtn.addEventListener("click", enableNotifications);
+      enableNotificationsBtn.addEventListener("click", enableNotifications);
+      guestPreviewBtn.addEventListener("click", () => toast("מצב צפייה", "הצפייה פעילה. התחברות נדרשת להימור.", "info"));
+      maxYesBtn.addEventListener("click", () => { yesAmount.value = String(currentCoins()); noAmount.value = "0"; });
+      maxNoBtn.addEventListener("click", () => { noAmount.value = String(currentCoins()); yesAmount.value = "0"; });
+      clearBetBtn.addEventListener("click", resetMarketInputs);
+      placeBetBtn.addEventListener("click", placeBet);
+      document.addEventListener("click", async (e) => {
+        const roleBtn = e.target.closest("[data-role-toggle]");
+        if (roleBtn) {
+          if (state.role !== "admin") return;
+          const uid = roleBtn.getAttribute("data-role-toggle");
+          await toggleAdmin(uid);
+        }
+      });
+      adminTabs.forEach((btn) => btn.addEventListener("click", () => showAdminTab(btn.dataset.adminTab)));
+      createMarketForm.addEventListener("submit", createMarketHandler);
+      broadcastForm.addEventListener("submit", broadcastHandler);
+      siteSettingsForm.addEventListener("submit", settingsHandler);
+      reloadSettingsBtn.addEventListener("click", () => updateSettingsUI());
+      openMarketBtn.addEventListener("click", () => openMarket());
+      closeMarketBtn.addEventListener("click", () => closeMarket());
+      requestResolveBtn.addEventListener("click", () => requestResolution());
+      seedDemoBtn.addEventListener("click", seedDemo);
+      testBroadcastBtn.addEventListener("click", queueTestBroadcast);
+      adminUserSearch.addEventListener("input", renderUsersTable);
+      copyRulesBtn.addEventListener("click", () => copyToClipboard(FIREBASE_RULES_TEMPLATE, "חוקי Firebase"));
+      copySwBtn.addEventListener("click", () => copyToClipboard(FIREBASE_SW_TEMPLATE, "Service Worker"));
+      copyFunctionsBtn.addEventListener("click", () => copyToClipboard(FIREBASE_FUNCTIONS_TEMPLATE, "Functions"));
+      onMessage(messaging, (payload) => {
+        toast(payload.notification?.title || "התראה חדשה", payload.notification?.body || "", "success");
+      });
+    };
+
+    const copyToClipboard = async (text, label) => {
+      try { await navigator.clipboard.writeText(text); toast(label, "הועתק ללוח", "success"); }
+      catch { toast("שגיאה", "לא ניתן להעתיק", "danger"); }
+    };
+
+    const enableNotifications = async () => {
+      if (!("Notification" in window)) return toast("לא נתמך", "הדפדפן לא תומך בהתראות", "warning");
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") return toast("נדחה", "יש לאשר התראות", "warning");
+      const reg = await navigator.serviceWorker.register("./firebase-messaging-sw.js");
+      const token = await getToken(messaging, { vapidKey, serviceWorkerRegistration: reg });
+      if (!token) return toast("ללא token", "לא התקבל טוקן", "warning");
+      state.notificationsEnabled = true;
+      notificationState.textContent = "פועל";
+      await set(ref(db, `notifications/tokens/${auth.currentUser.uid}/${token.slice(0, 20)}`), { token, createdAt: serverTimestamp(), updatedAt: serverTimestamp(), active: true });
+      toast("FCM הופעל", "הטוקן נשמר", "success");
+      renderHeader();
+    };
+
+    const getCurrentMarketId = () => state.activeMarket?.id || state.settings.activeMarketId || null;
+
+    const placeBet = async () => {
+      const market = activeMarket();
+      if (!market || market.status !== "open") return toast("שוק סגור", "אי אפשר להמר עכשיו", "warning");
+      const y = clamp(readNum(yesAmount.value, 0), 0, currentCoins());
+      const n = clamp(readNum(noAmount.value, 0), 0, currentCoins());
+      if (y + n <= 0) return toast("הימור ריק", "הכנס ערכים", "warning");
+      if (y + n > currentCoins()) return toast("חריגה", "מותר עד 10 מטבעות", "warning");
+      const uid = auth.currentUser.uid;
+      try {
+        await runTransaction(ref(db, marketPath(market.id)), (current) => {
+          if (!current || current.status !== "open") return current;
+          current.bets = current.bets || {};
+          const existing = current.bets[uid] || { yes: 0, no: 0, remaining: currentCoins() };
+          if (readNum(existing.remaining, currentCoins()) < y + n) return;
+          current.bets[uid] = {
+            yes: readNum(existing.yes, 0) + y,
+            no: readNum(existing.no, 0) + n,
+            remaining: readNum(existing.remaining, currentCoins()) - (y + n),
+            updatedAt: Date.now(),
+            displayName: state.profile?.displayName || auth.currentUser.displayName || auth.currentUser.email
+          };
+          current.totalYes = readNum(current.totalYes, 0) + y;
+          current.totalNo = readNum(current.totalNo, 0) + n;
+          current.totalVolume = readNum(current.totalVolume, 0) + y + n;
+          current.totalBettors = current.bets[uid] && current.bets[uid].remaining === currentCoins() ? readNum(current.totalBettors, 0) + 1 : readNum(current.totalBettors, 0);
+          return current;
+        });
+        await update(ref(db, `profiles/${uid}`), { totalBets: readNum(state.profile?.totalBets, 0) + 1, updatedAt: serverTimestamp() });
+        await push(ref(db, "audit/logs"), { kind: "bet", title: "הימור נרשם", detail: `${uidShort(uid)} yes ${y} no ${n}`, createdAt: serverTimestamp(), actor: uid });
+        yesAmount.value = ""; noAmount.value = "";
+        toast("הימור נשמר", "ההימור נוסף לשוק", "success");
+      } catch (err) {
+        console.error(err);
+        toast("שגיאה", "ההימור לא נשמר", "danger");
+      }
+    };
+
+    const createMarketHandler = async (e) => {
+      e.preventDefault();
+      if (state.role !== "admin") return toast("אין הרשאה", "רק מנהל יכול", "danger");
+      const question = marketQuestionInput.value.trim();
+      if (!question) return toast("חסר שאלה", "יש להזין שאלה", "warning");
+      const id = push(ref(db, "markets")).key;
+      const minutes = clamp(readNum(marketMinutesInput.value, 30), 1, 10080);
+      const openNow = marketInitialStatusInput.value === "open";
+      const payload = {
+        question,
+        description: marketDescriptionInput.value.trim(),
+        category: marketCategoryInput.value,
+        status: openNow ? "open" : "draft",
+        createdAt: serverTimestamp(),
+        createdBy: auth.currentUser.uid,
+        createdByName: state.profile?.displayName || auth.currentUser.email,
+        openedAt: openNow ? serverTimestamp() : null,
+        closesAt: openNow ? Date.now() + minutes * 60 * 1000 : null,
+        closedAt: null,
+        resolvedAt: null,
+        result: null,
+        totalYes: 0,
+        totalNo: 0,
+        totalVolume: 0,
+        totalBettors: 0,
+        defaultCoins: currentCoins(),
+        bets: {},
+        settlement: {}
+      };
+      await set(ref(db, `markets/${id}`), payload);
+      await update(ref(db, "settings/public"), { activeMarketId: id });
+      if (marketAutoNotifyInput.value === "yes") {
+        await push(ref(db, "adminQueue/broadcasts"), {
+          title: question,
+          body: marketDescriptionInput.value.trim(),
+          target: "all",
+          type: "market_open",
+          status: "queued",
+          createdAt: serverTimestamp(),
+          createdBy: auth.currentUser.uid
+        });
+      }
+      toast("שוק נוצר", id, "success");
+      renderAll();
+    };
+
+    const openMarket = async () => {
+      const market = activeMarket();
+      if (!market) return toast("אין שוק", "אין שוק לפתיחה", "warning");
+      await update(ref(db, `markets/${market.id}`), { status: "open", openedAt: serverTimestamp(), closesAt: Date.now() + 30 * 60 * 1000 });
+      await update(ref(db, "settings/public"), { activeMarketId: market.id });
+      toast("השוק נפתח", market.question, "success");
+    };
+
+    const closeMarket = async () => {
+      const market = activeMarket();
+      if (!market) return toast("אין שוק", "אין שוק לסגירה", "warning");
+      await update(ref(db, `markets/${market.id}`), { status: "closed", closedAt: serverTimestamp() });
+      toast("השוק נסגר", market.question, "warning");
+    };
+
+    const requestResolution = async () => {
+      const market = activeMarket();
+      if (!market) return toast("אין שוק", "אין שוק להכרעה", "warning");
+      const result = String(prompt("הכנס תוצאה: yes / no / draw", "yes") || "").trim().toLowerCase();
+      if (!["yes","no","draw"].includes(result)) return toast("תוצאה לא חוקית", "הכנס yes / no / draw", "warning");
+      await push(ref(db, "adminQueue/resolutions"), {
+        marketId: market.id,
+        result,
+        status: "queued",
+        createdAt: serverTimestamp(),
+        createdBy: auth.currentUser.uid
+      });
+      await push(ref(db, "adminQueue/broadcasts"), {
+        title: "הכרעת שוק בתהליך",
+        body: `השוק ${market.question} נמצא בהכרעה.`,
+        target: "all",
+        type: "market_resolve",
+        status: "queued",
+        createdAt: serverTimestamp(),
+        createdBy: auth.currentUser.uid
+      });
+      toast("הכרעה בתור", "Cloud Function תבצע settlement", "success");
+    };
+
+    const seedDemo = async () => {
+      if (state.role !== "admin") return;
+      marketQuestionInput.value = "האם תהיה אזעקה ב-6 השעות הקרובות?";
+      marketDescriptionInput.value = "שוק דמו לבדיקת ממשק, תחזיות וחלוקת רווחים.";
+      marketCategoryInput.value = "alerts";
+      marketMinutesInput.value = 120;
+      marketInitialStatusInput.value = "open";
+      marketAutoNotifyInput.value = "no";
+      await createMarketHandler(new Event("submit"));
+    };
+
+    const broadcastHandler = async (e) => {
+      e.preventDefault();
+      if (state.role !== "admin") return toast("אין הרשאה", "רק מנהל יכול לשדר", "danger");
+      const title = broadcastTitleInput.value.trim();
+      const body = broadcastBodyInput.value.trim();
+      if (!title || !body) return toast("חסר נתון", "כותרת ותוכן נדרשים", "warning");
+      await push(ref(db, "adminQueue/broadcasts"), {
+        title,
+        body,
+        target: broadcastTargetInput.value,
+        type: broadcastTypeInput.value,
+        status: "queued",
+        createdAt: serverTimestamp(),
+        createdBy: auth.currentUser.uid
+      });
+      broadcastTitleInput.value = ""; broadcastBodyInput.value = "";
+      toast("שידור בתור", "Cloud Function תשלח את ההתראה", "success");
+    };
+
+    const settingsHandler = async (e) => {
+      e.preventDefault();
+      if (state.role !== "admin") return toast("אין הרשאה", "רק מנהל יכול לערוך", "danger");
+      await update(ref(db, "settings/public"), {
+        siteName: siteNameInput.value.trim() || defaultSettings.siteName,
+        siteTagline: siteTaglineInput.value.trim() || defaultSettings.siteTagline,
+        maintenanceMode: maintenanceModeInput.value === "on",
+        defaultCoinsPerMarket: clamp(readNum(defaultCoinsInput.value, 10), 1, 100),
+        updatedAt: serverTimestamp(),
+        updatedBy: auth.currentUser.uid
+      });
+      toast("נשמר", "הגדרות עודכנו", "success");
+    };
+
+    const updateSettingsUI = () => renderSettings();
+
+    const toggleAdmin = async (uid) => {
+      if (state.role !== "admin") return;
+      const snap = await get(ref(db, `roles/${uid}`));
+      const current = snap.val()?.admin === true;
+      await set(ref(db, `roles/${uid}`), { admin: !current, updatedAt: serverTimestamp(), updatedBy: auth.currentUser.uid });
+      toast("תפקיד עודכן", `${uidShort(uid)} -> ${!current ? "admin" : "user"}`, "success");
+    };
+
+    const liveClock = () => {
+      setInterval(() => {
+        if (state.activeMarket && state.activeMarket.status === "open") renderMarket();
+      }, 1000);
+    };
+
+    const init = () => {
+      setTheme(state.theme);
+      showAuthTab("login");
+      showAdminTab("market");
+      authTabs.forEach((btn) => btn.addEventListener("click", () => showAuthTab(btn.dataset.authTab)));
+      wireAuth();
+      wireMain();
+      onAuthStateChanged(auth, async (user) => {
+        clearSubs();
+        state.user = user;
+        state.profile = null;
+        state.wallet = null;
+        state.role = "user";
+        state.activeMarket = null;
+        state.markets = [];
+        state.activity = [];
+        state.broadcasts = [];
+        state.myBets = [];
+        if (!user) {
+          openAuth();
+          renderAll();
+          return;
+        }
+        await bootstrapProfile(user);
+        await loadSession(user);
+        openApp();
+        roleChip.textContent = roleLabel();
+        adminPanel.classList.toggle("hidden", state.role !== "admin");
+        if (!state.liveTimer) liveClock();
+      });
+    };
+
+    async function bootstrapProfileLegacy(user) {
+      const pRef = ref(db, `profiles/${user.uid}`);
+      const wRef = ref(db, `wallets/${user.uid}`);
+      const pSnap = await get(pRef);
+      if (!pSnap.exists()) {
+        await set(pRef, { displayName: user.displayName || user.email.split("@")[0], email: user.email, role: "user", createdAt: serverTimestamp(), updatedAt: serverTimestamp(), wins: 0, losses: 0, profit: 0, totalBets: 0 });
+      }
+      const wSnap = await get(wRef);
+      if (!wSnap.exists()) {
+        await set(wRef, { balance: 0, lifetimeWinnings: 0, lifetimeStaked: 0, profit: 0, updatedAt: serverTimestamp() });
+      }
+    }
+
+    init();
+
+    const FIREBASE_RULES_TEMPLATE = `{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "settings": {
+      "public": {
+        ".read": "auth != null",
+        ".write": "root.child('roles').child(auth.uid).child('admin').val() === true"
+      }
+    },
+
+    "profiles": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('roles').child(auth.uid).child('admin').val() === true)",
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['displayName','email'])"
+      }
+    },
+
+    "wallets": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('roles').child(auth.uid).child('admin').val() === true)",
+        ".write": "root.child('roles').child(auth.uid).child('admin').val() === true"
+      }
+    },
+
+    "roles": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('roles').child(auth.uid).child('admin').val() === true)",
+        ".write": "root.child('roles').child(auth.uid).child('admin').val() === true",
+        ".validate": "newData.hasChildren(['admin'])"
+      }
+    },
+
+    "notifications": {
+      "tokens": {
+        "$uid": {
+          ".read": "auth != null && (auth.uid === $uid || root.child('roles').child(auth.uid).child('admin').val() === true)",
+          ".write": "auth != null && auth.uid === $uid"
+        }
+      }
+    },
+
+    "markets": {
+      "$marketId": {
+        ".read": "auth != null",
+        ".write": "root.child('roles').child(auth.uid).child('admin').val() === true",
+
+        "bets": {
+          "$uid": {
+            ".read": "auth != null && (auth.uid === $uid || root.child('roles').child(auth.uid).child('admin').val() === true)",
+            ".write": "auth != null && auth.uid === $uid && root.child('markets').child($marketId).child('status').val() === 'open'",
+            ".validate": "newData.hasChildren(['yes','no','remaining'])"
+          }
+        }
+      }
+    },
+
+    "adminQueue": {
+      ".read": "root.child('roles').child(auth.uid).child('admin').val() === true",
+      ".write": "root.child('roles').child(auth.uid).child('admin').val() === true",
+
+      "broadcasts": {
+        "$id": {
+          ".validate": "newData.hasChildren(['title','body','target','type','status'])"
+        }
+      },
+
+      "resolutions": {
+        "$id": {
+          ".validate": "newData.hasChildren(['marketId','result','status'])"
+        }
+      }
+    },
+
+    "audit": {
+      "logs": {
+        ".read": "root.child('roles').child(auth.uid).child('admin').val() === true",
+        ".write": "auth != null"
+      }
+    }
+  }
+}`;
+    const FIREBASE_SW_TEMPLATE = `/* firebase-messaging-sw.js */
+
+importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
+
+firebase.initializeApp({
+  apiKey: '__API_KEY__',
+  authDomain: '__AUTH_DOMAIN__',
+  projectId: '__PROJECT_ID__',
+  messagingSenderId: '__MESSAGING_SENDER_ID__',
+  appId: '__APP_ID__'
+});
+
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage((payload) => {
+  const title = payload.notification?.title || 'Family Forecast Market';
+  const options = {
+    body: payload.notification?.body || payload.data?.body || '',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    data: payload.data || {}
+  };
+
+  self.registration.showNotification(title, options);
+});`;
+    const FIREBASE_FUNCTIONS_TEMPLATE = `// functions/index.js
+
+const admin = require('firebase-admin');
+const { onValueCreated } = require('firebase-functions/v2/database');
+
+admin.initializeApp();
+
+exports.processAdminBroadcast = onValueCreated('/adminQueue/broadcasts/{broadcastId}', async (event) => {
+  const broadcastId = event.params.broadcastId;
+  const data = event.data.val();
+
+  if (!data || data.status === 'sent') return;
+
+  const db = admin.database();
+  const tokensSnap = await db.ref('notifications/tokens').get();
+  const tokensRoot = tokensSnap.val() || {};
+  const tokens = [];
+
+  Object.entries(tokensRoot).forEach(([uid, tokenGroup]) => {
+    Object.values(tokenGroup || {}).forEach((row) => {
+      if (row && row.token && row.active !== false) {
+        tokens.push({ token: row.token, uid });
+      }
+    });
+  });
+
+  if (!tokens.length) {
+    await db.ref(\`adminQueue/broadcasts/\${broadcastId}\`).update({ status: 'sent', delivered: 0 });
+    return;
+  }
+
+  const message = {
+    notification: {
+      title: data.title || 'Family Forecast Market',
+      body: data.body || ''
+    },
+    data: {
+      type: data.type || 'custom',
+      target: data.target || 'all',
+      marketId: data.marketId || ''
+    }
+  };
+
+  let delivered = 0;
+  const batches = [];
+  while (tokens.length) {
+    batches.push(tokens.splice(0, 500));
+  }
+
+  for (const batch of batches) {
+    const multicast = {
+      tokens: batch.map((x) => x.token),
+      notification: message.notification,
+      data: message.data
+    };
+    const response = await admin.messaging().sendEachForMulticast(multicast);
+    delivered += response.successCount;
+  }
+
+  await db.ref(\`adminQueue/broadcasts/\${broadcastId}\`).update({
+    status: 'sent',
+    delivered,
+    sentAt: admin.database.ServerValue.TIMESTAMP
+  });
+});
+
+exports.processMarketResolution = onValueCreated('/adminQueue/resolutions/{resolutionId}', async (event) => {
+  const resolutionId = event.params.resolutionId;
+  const data = event.data.val();
+  if (!data || !data.marketId || !data.result) return;
+
+  const db = admin.database();
+  const marketRef = db.ref(\`markets/\${data.marketId}\`);
+  const marketSnap = await marketRef.get();
+  const market = marketSnap.val();
+
+  if (!market || market.status === 'resolved') {
+    await db.ref(\`adminQueue/resolutions/\${resolutionId}\`).update({ status: 'ignored' });
+    return;
+  }
+
+  const result = String(data.result).toLowerCase();
+  const bets = market.bets || {};
+  const totalYes = Number(market.totalYes || 0);
+  const totalNo = Number(market.totalNo || 0);
+  const totalPool = totalYes + totalNo;
+  const winningPool = result === 'yes' ? totalYes : result === 'no' ? totalNo : 0;
+
+  const updates = {};
+  updates[\`markets/\${data.marketId}/status\`] = 'resolved';
+  updates[\`markets/\${data.marketId}/result\`] = result;
+  updates[\`markets/\${data.marketId}/resolvedAt\`] = admin.database.ServerValue.TIMESTAMP;
+  updates[\`markets/\${data.marketId}/closedAt\`] = market.closedAt || admin.database.ServerValue.TIMESTAMP;
+  updates[\`markets/\${data.marketId}/settlement/result\`] = result;
+  updates[\`markets/\${data.marketId}/settlement/processedAt\`] = admin.database.ServerValue.TIMESTAMP;
+  updates[\`adminQueue/resolutions/\${resolutionId}/status\`] = 'processed';
+
+  const profilesSnap = await db.ref('profiles').get();
+  const profiles = profilesSnap.val() || {};
+  const walletsSnap = await db.ref('wallets').get();
+  const wallets = walletsSnap.val() || {};
+
+  Object.entries(bets).forEach(([uid, bet]) => {
+    const stake = result === 'yes'
+      ? Number(bet.yes || 0)
+      : result === 'no'
+        ? Number(bet.no || 0)
+        : 0;
+
+    const payout = winningPool > 0 && totalPool > 0 && stake > 0
+      ? (stake / winningPool) * totalPool
+      : 0;
+
+    const walletBalance = Number(wallets[uid]?.balance || 0);
+    const profit = Math.max(0, payout - stake);
+
+    updates[\`wallets/\${uid}/balance\`] = Number((walletBalance + payout).toFixed(2));
+    updates[\`wallets/\${uid}/lifetimeWinnings\`] = Number(((wallets[uid]?.lifetimeWinnings || 0) + payout).toFixed(2));
+    updates[\`wallets/\${uid}/profit\`] = Number(((wallets[uid]?.profit || 0) + profit).toFixed(2));
+    updates[\`profiles/\${uid}/wins\`] = result === 'yes' ? (profiles[uid]?.wins || 0) + 1 : (profiles[uid]?.wins || 0);
+    updates[\`profiles/\${uid}/losses\`] = result === 'no' ? (profiles[uid]?.losses || 0) + 1 : (profiles[uid]?.losses || 0);
+    updates[\`profiles/\${uid}/profit\`] = Number(((profiles[uid]?.profit || 0) + profit).toFixed(2));
+    updates[\`profiles/\${uid}/updatedAt\`] = admin.database.ServerValue.TIMESTAMP;
+  });
+
+  const logKey = db.ref('audit/logs').push().key;
+  updates[\`audit/logs/\${logKey}\`] = {
+    kind: 'settlement',
+    title: 'שוק הוכרע',
+    detail: \`\${data.marketId} => \${result} / pool \${totalPool} / winning \${winningPool}\`,
+    createdAt: admin.database.ServerValue.TIMESTAMP,
+    actor: data.createdBy || 'system'
+  };
+
+  await db.ref().update(updates);
+});`;
+
+    window.__FIREBASE_RULES_TEMPLATE__ = FIREBASE_RULES_TEMPLATE;
+    window.__FIREBASE_SW_TEMPLATE__ = FIREBASE_SW_TEMPLATE;
+    window.__FIREBASE_FUNCTIONS_TEMPLATE__ = FIREBASE_FUNCTIONS_TEMPLATE;
+
+    document.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        toast("קיצור דרך", "מוגדר כרגע רק בממשק", "info");
+      }
+    });
+  </script>
+<!--
+  BUILD NOTE 001: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 002: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 003: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 004: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 005: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 006: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 007: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 008: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 009: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 010: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 011: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 012: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 013: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 014: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 015: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 016: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 017: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 018: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 019: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 020: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 021: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 022: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 023: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 024: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 025: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 026: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 027: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 028: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 029: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 030: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 031: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 032: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 033: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 034: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 035: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 036: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 037: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 038: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 039: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 040: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 041: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 042: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 043: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 044: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 045: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 046: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 047: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 048: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 049: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 050: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 051: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 052: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 053: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 054: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 055: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 056: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 057: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 058: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 059: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 060: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 061: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 062: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 063: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 064: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 065: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 066: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 067: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 068: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 069: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 070: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 071: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 072: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 073: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 074: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 075: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 076: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 077: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 078: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 079: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 080: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 081: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 082: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 083: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 084: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 085: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 086: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 087: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 088: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 089: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 090: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 091: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 092: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 093: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 094: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 095: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 096: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 097: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 098: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 099: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 100: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 101: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 102: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 103: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 104: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 105: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 106: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 107: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 108: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 109: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 110: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 111: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 112: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 113: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 114: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 115: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 116: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 117: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 118: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 119: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 120: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 121: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 122: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 123: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 124: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 125: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 126: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 127: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 128: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 129: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 130: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 131: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 132: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 133: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 134: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 135: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 136: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 137: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 138: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 139: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 140: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 141: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 142: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 143: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 144: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 145: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 146: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 147: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 148: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 149: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 150: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 151: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 152: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 153: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 154: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 155: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 156: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 157: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 158: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 159: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+  BUILD NOTE 160: GitHub Pages hosts the frontend; Firebase handles auth, rules, RTDB sync, and push infrastructure.
+-->
+</body>
+          </html>
